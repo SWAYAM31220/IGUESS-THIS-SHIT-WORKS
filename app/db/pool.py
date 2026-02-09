@@ -17,12 +17,11 @@ async def init_pool() -> asyncpg.Pool:
         return _pool
 
     log.info("DB: connecting")
-    _pool = await asyncpg.create_pool(
-        dsn=settings.db_dsn,
-        min_size=1,
-        max_size=max(2, settings.CONCURRENT_UPDATES),
-        command_timeout=60,
-    )
+   _pool = await asyncpg.create_pool(
+    dsn=settings.database_url,
+    ssl=False,
+)
+
     log.info("DB: pool ready")
     return _pool
 
