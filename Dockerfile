@@ -16,7 +16,6 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 COPY app /app/app
 COPY migrations /app/migrations
 
-# optional: for local envs
-COPY .env.example /app/.env.example
+
 
 CMD ["python", "-m", "app.main"]
