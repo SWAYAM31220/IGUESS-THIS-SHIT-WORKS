@@ -13,14 +13,16 @@ _pool: asyncpg.Pool | None = None
 async def init_pool() -> asyncpg.Pool:
     """Create a global asyncpg pool."""
     global _pool
+
     if _pool is not None:
         return _pool
 
     log.info("DB: connecting")
-   _pool = await asyncpg.create_pool(
-    dsn=settings.database_url,
-    ssl=False,
-)
+
+    _pool = await asyncpg.create_pool(
+        dsn=settings.database_url,
+        ssl=False,
+    )
 
     log.info("DB: pool ready")
     return _pool
