@@ -1,13 +1,21 @@
 from __future__ import annotations
 
+import os
 import asyncpg
 
-from app.config.settings import settings
 from app.utils.logging import get_logger
 
 log = get_logger(__name__)
 
 _pool: asyncpg.Pool | None = None
+
+
+def _dsn() -> str:
+    # Render sets DATABASE_URL as an environment variable
+    dsn = os.getenv("DATABASE_URL")
+    if not dsn or not dsn.strip():
+        raise RuntimeError("Missing required env var: DATABASE_URL")
+    return dsn.strip()
 
 
 async def init_pool() -> asyncpg.Pool:
@@ -20,7 +28,7 @@ async def init_pool() -> asyncpg.Pool:
     log.info("DB: connecting")
 
     _pool = await asyncpg.create_pool(
-        dsn=settings.database_url,
+        dsn=_dsn(),
         ssl=False,  # REQUIRED for Render internal Postgres
     )
 
@@ -29,14 +37,12 @@ async def init_pool() -> asyncpg.Pool:
 
 
 def pool() -> asyncpg.Pool:
-    """Get the initialized asyncpg pool."""
     if _pool is None:
         raise RuntimeError("DB pool is not initialized")
     return _pool
 
 
 async def close_pool() -> None:
-    """Close the global asyncpg pool."""
     global _pool
     if _pool is not None:
         await _pool.close()
