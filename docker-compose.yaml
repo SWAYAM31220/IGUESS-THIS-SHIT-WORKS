@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: govd
+      POSTGRES_USER: govd
+      POSTGRES_PASSWORD: govd
+    ports:
+      - "5432:5432"
+    volumes:
+      - govd_db:/var/lib/postgresql/data
+
+  bot:
+    build: .
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - ./downloads:/app/downloads
+    restart: unless-stopped
+
+volumes:
+  govd_db:
